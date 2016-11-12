@@ -1,10 +1,15 @@
 #!/bin/bash
 
+## Some constant definitions
+###################################################################
 
-# Invoke the script with a directory as argument to install all HHpred3
-# dependencies to this location
+LEGACY_BLAST_BINARIES="blastpgp blastclust megablast impala formatdb"
 
+
+
+###################################################################
 PART="Standard Prefix"
+
 
 BUILDDEPS_PATH=$(pwd)
 LOG_DIR=${BUILDDEPS_PATH}/log
@@ -19,6 +24,7 @@ function check_dir {
         exit 1
     fi
 }
+
 
 
 while [[ $# -gt 1 ]] ; do
@@ -105,8 +111,15 @@ PART="BLAST"
 if [ "${WITH_LEGACY_BLAST}" ] ; then
 
     # TODO Check whether the directory actually contains legacy BLAST
-
     cd "${WITH_LEGACY_BLAST}"
+    for binary in ${LEGACY_BLAST_BINARIES} ; do
+
+        if [ ! -f ${binary} ] ; then
+
+            echo "${PART}. ERROR. The binary ${binary} was not found in the LEGACY-BLAST distribution."
+            exit 1
+        fi
+    done 
     BLASTROOT=$(pwd)
 else 
 
@@ -229,7 +242,7 @@ else
     cd "${i}_src"
 
     # Boosts Bootstrap
-    echo "${PART}. Bootstrapping Boost with: ${BBOOTSTRAP} --prefix=${BOOST/ROOT}"
+    echo "${PART}. Bootstrapping Boost with: ${BBOOTSTRAP} --prefix=${BOOSTROOT}"
     echo "${PART}. You might want to check the files bootstrap.out and bootstrap.err"
 
     "${BBOOTSTRAP}" --prefix="${BOOSTROOT}" --with-python="${PYEXEC}" 1> "${LOG_DIR}/bootstrap.out" 2> "${LOG_DIR}/bootstrap.err"
@@ -371,6 +384,8 @@ fi
 # Adjust the scripts in HHpaths
 cd "${HHSUITEROOT}/scripts"
 
+# TODO Add the semicolon
+
 sed -i "s|our \$execdir =.*|our \$execdir = \"${PSIPREDROOT}/bin\"|g" HHPaths.pm
 sed -i "s|our \$datadir =.*|our \$datadir = \"${PSIPREDROOT}/data\"|g" HHPaths.pm
 sed -i "s|our \$ncbidir =.*|our \$ncbidir = \"${BLASTROOT}/bin\"|g" HHPaths.pm
@@ -389,7 +404,11 @@ echo "unset HHLIB" > unsetenv.sh
 echo "export PATH=${PATH}" >> unsetenv.sh
 
 PYPATH=$(which "$PYEXEC")
-echo "export PATH=\"$(dirname $PYPATH):${HHSUITEROOT}/bin:${HHSUITEROOT}/scripts:${MMSEQSROOT}/bin:${DSSPROOT}:${PATH}\"" >> setenv.sh
+
+# TODO Add  PSI-PRED to PATH #TODO Validate (runpsipred in PATH?)
+# TODO ADD HHpred to PATH
+# TODO Also deploy HHviz script
+echo "export PATH=\"$(dirname $PYPATH):${PSIPREDROOT}"${HHSUITEROOT}/bin:${HHSUITEROOT}/scripts:${MMSEQSROOT}/bin:${DSSPROOT}:${PATH}\"" >> setenv.sh
 
 echo "export PYTHONPATH=\"${PDBXPYPATH}:${PYTHONPATH}\"" >> setenv.sh
 echo "export PYTHONPATH=\"${PYTHONPATH}\"" >> unsetenv.sh
