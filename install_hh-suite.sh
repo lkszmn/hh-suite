@@ -408,7 +408,7 @@ PYPATH=$(which "$PYEXEC")
 # TODO Add  PSI-PRED to PATH #TODO Validate (runpsipred in PATH?)
 # TODO ADD HHpred to PATH
 # TODO Also deploy HHviz script
-echo "export PATH=\"$(dirname $PYPATH):${PSIPREDROOT}"${HHSUITEROOT}/bin:${HHSUITEROOT}/scripts:${MMSEQSROOT}/bin:${DSSPROOT}:${PATH}\"" >> setenv.sh
+echo "export PATH=\"$(dirname $PYPATH):${PSIPREDROOT}:${HHSUITEROOT}/bin:${HHSUITEROOT}/scripts:${MMSEQSROOT}/bin:${DSSPROOT}:${PATH}\"" >> setenv.sh
 
 echo "export PYTHONPATH=\"${PDBXPYPATH}:${PYTHONPATH}\"" >> setenv.sh
 echo "export PYTHONPATH=\"${PYTHONPATH}\"" >> unsetenv.sh
