@@ -465,17 +465,17 @@ def template_id_to_pdb(template_id):
         return m.group(1).upper(), chain.upper()
     
     # match PDBID without chain (8fab, 1a01)
-    m = re.match(r'/^(\d[a-z0-9]{3})$', template_id)
+    m = re.match(r'/^(\d[A-Za-z0-9]{3})$', template_id)
     if m:
         return m.group(1).upper(), 'A'
     
     # PDB CODE with chain Identifier
-    m = re.match(r'^(\d[a-z0-9]{3})_(\S)$', template_id)
+    m = re.match(r'^(\d[A-Za-z0-9]{3})_(\S)$', template_id)
     if m:
         return m.group(1).upper(), m.group(2).upper()
 
     # Match DALI ID
-    m = re.match(r'^(\d[a-z0-9]{3})([A-Za-z0-9]?)_\d+$', template_id)
+    m = re.match(r'^(\d[A-Za-z0-9]{3})([A-Za-z0-9]?)_\d+$', template_id)
     if m:
         return m.group(1).upper(), m.group(2).upper()
     
