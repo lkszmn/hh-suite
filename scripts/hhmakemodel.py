@@ -449,6 +449,40 @@ def get_pdb_entry_id(block):
     
     return entry_id
 
+
+
+
+def template_id_to_pdb(template_id):
+    """
+    Extracts PDB ID and chain name from the provided template id
+    """
+    # match scopeID
+    m = re.match(r'^[defgh](\d[a-z0-9]{3})([a-z0-9_.])[a-z0-9_]$', template_id)
+    if m:
+        chain = m.group(2)
+        if chain == '_':
+            chain = 'A'
+        return m.group(1).upper(), chain.upper()
+    
+    # match PDBID without chain (8fab, 1a01)
+    m = re.match(r'/^(\d[a-z0-9]{3})$', template_id)
+    if m:
+        return m.group(1).upper(), 'A'
+    
+    # PDB CODE with chain Identifier
+    m = re.match(r'^(\d[a-z0-9]{3})_(\S)$')
+    if m:
+        return m.group(1).upper(), m.group(2).upper()
+
+    # Match DALI ID
+    m = re.match(r'^(\d[a-z0-9]{3})([A-Za-z0-9]?)_\d+$')
+    if m:
+        return m.group(1).upper(), m.group(2).upper()
+    
+    # No PDB code and chain identified
+    return None, None
+
+
 def create_template_grid(hhr_data):
     """ Creates a template grid """
 
@@ -466,9 +500,10 @@ def create_template_grid(hhr_data):
         # Load Meta Data
         start = template.start[1]
         end = template.end[1]
-        pdb_code = template.template_id.split("_")[0].upper()
-        chain = template.template_id.split("_")[1].upper()
 
+        # Get pdb_code and chain identifier of template
+        pdb_code, chain =  template_id_to_pdb(template.template_id)
+        
         m = re.search("(\d+.\d+)A", template.template_info) # try to extract resolution of the structure
         
         if m: 
